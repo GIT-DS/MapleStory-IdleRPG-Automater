@@ -575,7 +575,7 @@ class MapleStoryIdleBot:
     def _check_red_alert(self, screen) -> bool:
         """
         Check for red alert (boss red attack) during wave 3.
-        Only active during wave 3 (sleepywood) or wave 33 (ludibrium).
+        Only active during wave 3 (sleepywood, ludibrium, or orbis).
         If detected, immediately double-jump to avoid the attack.
         Returns True if red alert was detected and jumped.
         """
@@ -583,13 +583,15 @@ class MapleStoryIdleBot:
         if self.current_wave != 3:
             return False
         
-        # Check for red_alert template
-        red_alert = self.matcher.find(screen, "red_alert")
+        # Check for red_alert template (quest-specific)
+        red_alert_template = f"red_alert_{self.quest_choice}" if self.quest_choice == "orbis" else "red_alert"
+        red_alert = self.matcher.find(screen, red_alert_template)
+        
         if not red_alert:
             return False
         
         # RED ALERT DETECTED! Quick double-jump!
-        self._log("!!! RED ALERT - JUMPING !!!")
+        self._log(f"!!! RED ALERT DETECTED - Confidence: {red_alert.confidence:.3f} - JUMPING !!!")
         
         # Find jump button and double-tap immediately
         jump = self.matcher.find(screen, "jump")
