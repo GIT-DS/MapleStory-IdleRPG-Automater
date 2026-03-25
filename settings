@@ -1,0 +1,12 @@
+loglevel: info
+max-log-files: 5
+adb:
+  host: 127.0.0.1
+  port: 5555
+bot-option:
+  auto-party-quest: true
+  pq-timer: 3
+  auto-growth-after-pq-runs: 50
+  quest-choice: sleepywood
+  solo-option: false
+  random-jump: false

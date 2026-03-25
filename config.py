@@ -27,7 +27,7 @@ class ConfigManager:
             "auto-growth-after-pq-runs": 50,
             "quest-choice": "sleepywood",
             "solo-option": False,
-            "random-jump": True,
+            "random-jump": False,
         }
     }
     

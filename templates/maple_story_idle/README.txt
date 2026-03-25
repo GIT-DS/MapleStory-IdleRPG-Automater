@@ -23,6 +23,16 @@ WAVE TEMPLATES (in-PQ detection per quest):
   Ludibrium:  ludibrium_wave_11.png, ludibrium_wave_22.png, ludibrium_wave_33.png
   Orbis:      orbis_wave_1.png, orbis_wave_2.png, orbis_wave_3.png
 
+ORBIS WAVE 1 SPECIFIC TEMPLATES:
+  [x] orbis_box.png    - Interactive boxes in Orbis wave 1 (multiple can appear)
+  [x] orbis_talk.png   - Talk interaction that appears when near orbis_box
+
+ORBIT WAVE 1 BEHAVIOR:
+  - Bot will search for orbis_box templates and move towards them
+  - Uses character movement (up/down/left/right/jump) to navigate
+  - When orbis_talk becomes visible, bot will click it
+  - Continues to wave 2 after completing orbis_talk interaction
+
 OPTIONAL (for better detection):
   [ ] red_alert.png     - Boss red attack indicator (wave 3)
   [ ] in_pq.png         - Inside PQ battle indicator

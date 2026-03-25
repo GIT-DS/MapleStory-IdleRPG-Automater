@@ -273,6 +273,92 @@ class InputHandler:
         ]
         action = random.choice(actions)
         return action()
+    
+    # Character movement methods for game navigation
+    def move_up(self, duration: float = 0.5) -> bool:
+        """Move character up using continuous arrow key down."""
+        self._random_delay(self.tap_delay_range)
+        # Key down
+        result = self.adb.key_down(19)  # KEYCODE_DPAD_UP
+        if result:
+            time.sleep(duration)
+            # Key up
+            self.adb.key_up(19)  # KEYCODE_DPAD_UP
+        return result
+    
+    def move_down(self, duration: float = 0.5) -> bool:
+        """Move character down using continuous arrow key down."""
+        self._random_delay(self.tap_delay_range)
+        # Key down
+        result = self.adb.key_down(20)  # KEYCODE_DPAD_DOWN
+        if result:
+            time.sleep(duration)
+            # Key up
+            self.adb.key_up(20)  # KEYCODE_DPAD_DOWN
+        return result
+    
+    def move_left(self, duration: float = 0.5) -> bool:
+        """Move character left using continuous arrow key down."""
+        self._random_delay(self.tap_delay_range)
+        # Key down
+        result = self.adb.key_down(21)  # KEYCODE_DPAD_LEFT
+        if result:
+            time.sleep(duration)
+            # Key up
+            self.adb.key_up(21)  # KEYCODE_DPAD_LEFT
+        return result
+    
+    def move_right(self, duration: float = 0.5) -> bool:
+        """Move character right using continuous arrow key down."""
+        self._random_delay(self.tap_delay_range)
+        # Key down
+        result = self.adb.key_down(22)  # KEYCODE_DPAD_RIGHT
+        if result:
+            time.sleep(duration)
+            # Key up
+            self.adb.key_up(22)  # KEYCODE_DPAD_RIGHT
+        return result
+    
+    def character_jump(self) -> bool:
+        """
+        Perform a character jump action.
+        For MapleStory Idle, this is typically a tap in the upper area.
+        """
+        jump_x = self.screen_width // 2
+        jump_y = self.screen_height // 4
+        return self.tap(jump_x, jump_y)
+    
+    def move_towards_target(self, target_x: int, target_y: int, duration: float = 0.5) -> bool:
+        """
+        Move character towards a target position using continuous arrow keys.
+        
+        Args:
+            target_x, target_y: Target coordinates to move towards
+            duration: Movement duration (how long to hold the key down)
+        
+        Returns:
+            True if movement successful
+        """
+        center_x = self.screen_width // 2
+        center_y = self.screen_height // 2
+        
+        # Calculate direction vector
+        dx = target_x - center_x
+        dy = target_y - center_y
+        
+        # Determine primary movement direction and use continuous movement
+        if abs(dx) > abs(dy):
+            # Horizontal movement is dominant
+            if dx > 0:
+                return self.move_right(duration)
+            else:
+                return self.move_left(duration)
+        else:
+            # Vertical movement is dominant
+            if dy > 0:
+                return self.move_down(duration)
+            else:
+                return self.move_up(duration)
 
 
 # Quick test

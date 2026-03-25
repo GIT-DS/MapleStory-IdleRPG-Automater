@@ -227,6 +227,34 @@ class ADBController:
         success, _ = self._run_adb("-s", self.address, "shell", "input", "keyevent", str(keycode))
         return success
     
+    def key_down(self, keycode: int) -> bool:
+        """
+        Send a key down event (press and hold).
+        
+        Args:
+            keycode: Android keycode
+        
+        Returns:
+            True if successful
+        """
+        success, _ = self._run_adb("-s", self.address, "shell", "input", "keyevent", "--longpress", str(keycode))
+        return success
+    
+    def key_up(self, keycode: int) -> bool:
+        """
+        Send a key up event (release).
+        Note: ADB input doesn't have separate key_up, so we send a regular key event
+        to simulate release.
+        
+        Args:
+            keycode: Android keycode
+        
+        Returns:
+            True if successful
+        """
+        success, _ = self._run_adb("-s", self.address, "shell", "input", "keyevent", str(keycode))
+        return success
+    
     def press_back(self) -> bool:
         """Press the back button."""
         return self.key_event(4)
