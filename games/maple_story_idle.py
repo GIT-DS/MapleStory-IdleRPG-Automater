@@ -572,41 +572,59 @@ class MapleStoryIdleBot:
     def _check_red_alert(self, screen) -> bool:
         """
         Check for red alert during wave 3 and immediately double-jump.
+        For Orbis, checks pixel color at (484, 405) for red hue.
         """
         if self.current_wave != 3:
             return False
 
-        # Check for any red alert template
-        red_alert_templates = []
         if self.quest_choice == "orbis":
-            red_alert_templates = ["red_alert_orbis_1", "red_alert_orbis_2", "red_alert_orbis"]
+            # Check pixel color at (484, 405) for red hue
+            pixel_color = self.screen.get_pixel_color(484, 405)
+            if pixel_color is None:
+                return False
+            
+            b, g, r = pixel_color
+            self._log(f"Orbis red alert pixel check - RGB: ({r}, {g}, {b})")
+            
+            # Check if pixel has red hue (high red, lower green/blue)
+            # Thresholds: R > 100, R > G*1.5, R > B*1.5
+            if r > 100 and r > g * 1.5 and r > b * 1.5:
+                self._log(f"!!! RED ALERT DETECTED (pixel) - RGB: ({r}, {g}, {b}) - JUMPING !!!")
+                jump = self.matcher.find(screen, "jump")
+                if jump:
+                    self._perform_double_jump()
+                    self.last_jump_time = datetime.now()
+                    return True
+                else:
+                    self._log("Jump button not found!")
+            return False
         else:
+            # Use template-based detection for non-Orbis quests
             red_alert_templates = ["red_alert"]
-        
-        red_alert = None
-        detected_template = None
-        for template in red_alert_templates:
-            match = self.matcher.find(screen, template)
-            if match:
-                red_alert = match
-                detected_template = template
-                break
+            red_alert = None
+            detected_template = None
+            for template in red_alert_templates:
+                match = self.matcher.find(screen, template)
+                if match:
+                    red_alert = match
+                    detected_template = template
+                    break
 
-        if not red_alert:
-            return False
+            if not red_alert:
+                return False
 
-        self._log(f"!!! RED ALERT DETECTED ({detected_template}) - Confidence: {red_alert.confidence:.3f} - JUMPING !!!")
+            self._log(f"!!! RED ALERT DETECTED ({detected_template}) - Confidence: {red_alert.confidence:.3f} - JUMPING !!!")
 
-        jump = self.matcher.find(screen, "jump")
-        if jump:
-            self.input.tap_center(jump)
-            time.sleep(0.05)
-            self.input.tap_center(jump)
-            self.last_jump_time = datetime.now()
-            return True
-        else:
-            self._log("Jump button not found!")
-            return False
+            jump = self.matcher.find(screen, "jump")
+            if jump:
+                self.input.tap_center(jump)
+                time.sleep(0.05)
+                self.input.tap_center(jump)
+                self.last_jump_time = datetime.now()
+                return True
+            else:
+                self._log("Jump button not found!")
+                return False
 
     def _create_party_if_needed(self, screen) -> bool:
         """
@@ -814,20 +832,23 @@ class MapleStoryIdleBot:
         DPAD_RIGHT = 22
 
         def hold_keys():
-            self.adb.key_down(DPAD_UP)
 
             if direction == "left":
                 self.adb.key_down(DPAD_LEFT)
             elif direction == "right":
                 self.adb.key_down(DPAD_RIGHT)
+            else:
+                self.adb.key_down(DPAD_UP)
 
             time.sleep(hold_time)
 
-            self.adb.key_up(DPAD_UP)
             if direction == "left":
                 self.adb.key_up(DPAD_LEFT)
             elif direction == "right":
                 self.adb.key_up(DPAD_RIGHT)
+            else:
+                self.adb.key_up(DPAD_UP)
+
 
         t = threading.Thread(target=hold_keys, daemon=True)
         t.start()
